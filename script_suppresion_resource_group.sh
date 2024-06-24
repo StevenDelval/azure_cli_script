@@ -15,7 +15,7 @@ log_with_date() {
 
 az account set --subscription $SUBSCRIPTION_ID
 
-az group delete --name "$RESOURCE_GROUP_NAME" --yes --no-wait | tee -a $LOG_FILE
+az group delete --name "$RESOURCE_GROUP_NAME" --yes --no-wait 
 
 
 log_with_date "Groupe de ressources '$RESOURCE_GROUP_NAME' est en cours de suppression sous la souscription '$SUBSCRIPTION_ID'."
