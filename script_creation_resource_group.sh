@@ -15,6 +15,6 @@ log_with_date() {
 
 az account set --subscription $SUBSCRIPTION_ID
 
-az group create --name "$RESOURCE_GROUP_NAME" --location "$LOCATION" | tee -a $LOG_FILE
+az group create --name "$RESOURCE_GROUP_NAME" --location "$LOCATION"
 
 log_with_date "Groupe de ressources '$RESOURCE_GROUP_NAME' créé dans la localisation '$LOCATION'."
