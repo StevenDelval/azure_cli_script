@@ -17,4 +17,4 @@ az account set --subscription $SUBSCRIPTION_ID
 
 az storage container create --name $NOM_BLOB_CONTAINER --account-name $STORAGE_NAME
 
-log_with_date "Container '$STORAGE_NAME' dans le compte de stockage '$STORAGE_NAME'."
+log_with_date "Container '$STORAGE_NAME' dans le compte de stockage '$STORAGE_NAME' cree."
