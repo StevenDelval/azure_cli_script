@@ -17,11 +17,30 @@ log_with_date() {
 # Sélection de la souscription Azure
 az account set --subscription $SUBSCRIPTION_ID
 
+# Récupération de la clé de l'account de stockage
+ACCOUNT_CONNECTION_STR=$(az storage account show-connection-string --resource-group $RESOURCE_GROUP_NAME --name $STORAGE_NAME --query connectionString -o tsv)
+if [ -z "$ACCOUNT_CONNECTION_STR" ]; then
+  log_with_date "Erreur lors de la récupération de la connection-string du stockage."
+  exit 1
+fi
 
+# Création du fichier JSON pour le service lié de stockage
+cat <<EOF > ./json/linked_service_storage.json
+{
+    "type": "AzureBlobStorage",
+    "typeProperties": {
+      "connectionString": "$ACCOUNT_CONNECTION_STR"           
+  }
+}
+EOF
 
+az datafactory linked-service create \
+    --resource-group "$RESOURCE_GROUP_NAME" \
+    --factory-name "$DATAFACORY_NAME" \
+    --linked-service-name "$NAMESERVICESTORAGE" \
+    --properties @./json/linked_service_storage.json
 
-
-# Recupere batch account key
+# Récupération de la clé de l'account de batch
 BATCHACCOUNTKEY=$(az batch account keys list \
     --resource-group $RESOURCE_GROUP_NAME_BATCH \
     --name $BATCHACCOUNTNAME \
@@ -32,45 +51,29 @@ if [ -z "$BATCHACCOUNTKEY" ]; then
   exit 1
 fi
 
-#Creation du json pour cree 
-cat <<EOF > linked_service_batch.json
+# Creation du json pour créer le service de lien de batch
+cat <<EOF > ./json/linked_service_batch.json
 {
-    "name": "$NAMESERVICEBATCH",
-    "type": "Microsoft.DataFactory/factories/linkedservices",
-    "properties": {
-        "type": "AzureBatch",
-        "typeProperties": {
-            "accountName": "$BATCHACCOUNTNAME",
-            "batchUri": "$BATCHURI",
-            "poolName": "$POOLNAME",
-            "linkedServiceAuthType": "AccountKey",
-            "accountKey": {
-                "type": "SecureString",
-                "value": "$BATCHACCOUNTKEY"
-            }
-        }
+    "type": "AzureBatch",
+    "typeProperties": {
+      "accountName": "$BATCHACCOUNTNAME",
+      "batchUri": "$BATCHURI",
+      "poolName": "$POOLNAME",
+      "accessKey": {
+        "type": "SecureString",
+        "value": "$BATCHACCOUNTKEY"
+      },
+      "linkedServiceName": {
+        "referenceName": "$NAMESERVICESTORAGE",
+        "type": "LinkedServiceReference"
+      }
     }
 }
 EOF
 
-# # Creation du ressources groupe 
-# az datafactory create --factory-name "$DATAFACORY_NAME" --resource-group "$RESOURCE_GROUP_NAME" --location "$LOCATION"
-# if [ $? -ne 0 ]; then
-#   log_with_date "Erreur lors du la creation du datafactory."
-#   exit 1
-# else
-#   log_with_date "Datafactory "$DATAFACORY_NAME" pour le groupe de ressources '$RESOURCE_GROUP_NAME' créé dans la localisation '$LOCATION'."
-# fi
-
-
-
-
-# # Creation du ressources groupe 
-# az datafactory create --factory-name "$DATAFACORY_NAME" --resource-group "$RESOURCE_GROUP_NAME" --location "$LOCATION"
-# if [ $? -ne 0 ]; then
-#   log_with_date "Erreur lors du la creation du datafactory."
-#   exit 1
-# else
-#   log_with_date "Datafactory "$DATAFACORY_NAME" pour le groupe de ressources '$RESOURCE_GROUP_NAME' créé dans la localisation '$LOCATION'."
-# fi
+az datafactory linked-service create \
+    --resource-group "$RESOURCE_GROUP_NAME" \
+    --factory-name "$DATAFACORY_NAME" \
+    --linked-service-name "$NAMESERVICEBATCH" \
+    --properties "@./json/linked_service_batch.json"
 
