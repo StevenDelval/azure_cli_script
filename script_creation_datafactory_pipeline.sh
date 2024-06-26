@@ -33,12 +33,18 @@ cat <<EOF > ./json/linked_service_storage.json
   }
 }
 EOF
-
+# Creation service de lien de blob
 az datafactory linked-service create \
     --resource-group "$RESOURCE_GROUP_NAME" \
     --factory-name "$DATAFACORY_NAME" \
     --linked-service-name "$NAMESERVICESTORAGE" \
     --properties @./json/linked_service_storage.json
+if [ $? -ne 0 ]; then
+  log_with_date "Erreur lors du service blob."
+  exit 1
+else
+  log_with_date "Le service blob "$NAMESERVICESTORAGE" créé dans le datafactory '$DATAFACORY_NAME'."
+fi
 
 # Récupération de la clé de l'account de batch
 BATCHACCOUNTKEY=$(az batch account keys list \
@@ -70,10 +76,65 @@ cat <<EOF > ./json/linked_service_batch.json
     }
 }
 EOF
-
+# Creation service de lien de batch
 az datafactory linked-service create \
     --resource-group "$RESOURCE_GROUP_NAME" \
     --factory-name "$DATAFACORY_NAME" \
     --linked-service-name "$NAMESERVICEBATCH" \
     --properties "@./json/linked_service_batch.json"
+if [ $? -ne 0 ]; then
+  log_with_date "Erreur lors du service batch."
+  exit 1
+else
+  log_with_date "Le service batch "$NAMESERVICEBATCH" créé dans le datafactory '$DATAFACORY_NAME'."
+fi
 
+# Creation du json pour créer la pipeline
+cat <<EOF > ./json/pipeline.json
+{
+    "activities": [
+            {
+                "name": "$CUSTOMNAME",
+                "type": "Custom",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "command": "$COMMANDECUSTOM",
+                    "resourceLinkedService": {
+                        "referenceName": "$NAMESERVICESTORAGE",
+                        "type": "LinkedServiceReference"
+                    },
+                    "folderPath": "$NOM_BLOB_CONTAINER",
+                    "referenceObjects": {
+                        "linkedServices": [],
+                        "datasets": []
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "$NAMESERVICEBATCH",
+                    "type": "LinkedServiceReference"
+                }
+            }
+        ]
+}
+EOF
+
+# Creation service de la pipeline
+az datafactory pipeline create \
+    --resource-group "$RESOURCE_GROUP_NAME" \
+    --factory-name "$DATAFACORY_NAME" \
+    --name "$PIPELINENAME" \
+    --pipeline "@./json/pipeline.json"
+if [ $? -ne 0 ]; then
+  log_with_date "Erreur lors de la creation du pipeline."
+  exit 1
+else
+  log_with_date "La pipeline "$PIPELINENAME" créé dans le datafactory '$DATAFACORY_NAME'."
+fi
