@@ -157,8 +157,8 @@ cat <<EOF > ./json/trigger.json
         "recurrence": {
             "frequency": "Minute",
             "interval": 1,
-            "startTime": $STARTTIMETRIGGER,
-            "endTime": $ENDTIMETRIGGER,
+            "startTime": "$STARTTIMETRIGGER",
+            "endTime": "$ENDTIMETRIGGER",
             "timeZone": "Romance Standard Time"
         }
     }
