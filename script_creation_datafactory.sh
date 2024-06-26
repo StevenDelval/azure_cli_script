@@ -17,7 +17,7 @@ log_with_date() {
 # Sélection de la souscription Azure
 az account set --subscription $SUBSCRIPTION_ID
 
-# Creation du ressources groupe 
+# Creation du datafactory
 az datafactory create --factory-name "$DATAFACORY_NAME" --resource-group "$RESOURCE_GROUP_NAME" --location "$LOCATION"
 if [ $? -ne 0 ]; then
   log_with_date "Erreur lors du la creation du datafactory."
