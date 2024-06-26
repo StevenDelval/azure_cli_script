@@ -157,8 +157,8 @@ cat <<EOF > ./json/trigger.json
         "recurrence": {
             "frequency": "Minute",
             "interval": 1,
-            "startTime": "2024-06-26T16:20:00",
-            "endTime": "2024-06-26T16:25:00",
+            "startTime": $STARTTIMETRIGGER,
+            "endTime": $ENDTIMETRIGGER,
             "timeZone": "Romance Standard Time"
         }
     }
@@ -176,4 +176,16 @@ if [ $? -ne 0 ]; then
   exit 1
 else
   log_with_date "La trigger '$TRIGGERNAME' créé dans le datafactory '$DATAFACORY_NAME'."
+fi
+
+az datafactory trigger start \
+    --resource-group "$RESOURCE_GROUP_NAME" \
+    --factory-name "$DATAFACORY_NAME" \
+    --name "$TRIGGERNAME"
+    
+if [ $? -ne 0 ]; then
+  log_with_date "Erreur lors du demarrage du trigger."
+  exit 1
+else
+  log_with_date "La trigger '$TRIGGERNAME' dans le datafactory '$DATAFACORY_NAME' est demarre."
 fi
