@@ -43,7 +43,7 @@ if [ $? -ne 0 ]; then
   log_with_date "Erreur lors du service blob."
   exit 1
 else
-  log_with_date "Le service blob "$NAMESERVICESTORAGE" créé dans le datafactory '$DATAFACORY_NAME'."
+  log_with_date "Le service blob '$NAMESERVICESTORAGE' créé dans le datafactory '$DATAFACORY_NAME'."
 fi
 
 # Récupération de la clé de l'account de batch
@@ -86,7 +86,7 @@ if [ $? -ne 0 ]; then
   log_with_date "Erreur lors du service batch."
   exit 1
 else
-  log_with_date "Le service batch "$NAMESERVICEBATCH" créé dans le datafactory '$DATAFACORY_NAME'."
+  log_with_date "Le service batch '$NAMESERVICEBATCH' créé dans le datafactory '$DATAFACORY_NAME'."
 fi
 
 # Creation du json pour créer la pipeline
@@ -136,7 +136,7 @@ if [ $? -ne 0 ]; then
   log_with_date "Erreur lors de la creation du pipeline."
   exit 1
 else
-  log_with_date "La pipeline "$PIPELINENAME" créé dans le datafactory '$DATAFACORY_NAME'."
+  log_with_date "La pipeline '$PIPELINENAME' créé dans le datafactory '$DATAFACORY_NAME'."
 fi
 
 # Creation du json pour créer la trigger
@@ -175,5 +175,5 @@ if [ $? -ne 0 ]; then
   log_with_date "Erreur lors de la creation du trigger."
   exit 1
 else
-  log_with_date "La trigger "$TRIGGERNAME" créé dans le datafactory '$DATAFACORY_NAME'."
+  log_with_date "La trigger '$TRIGGERNAME' créé dans le datafactory '$DATAFACORY_NAME'."
 fi
