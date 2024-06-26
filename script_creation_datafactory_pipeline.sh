@@ -178,6 +178,7 @@ else
   log_with_date "La trigger '$TRIGGERNAME' créé dans le datafactory '$DATAFACORY_NAME'."
 fi
 
+# Start trigger
 az datafactory trigger start \
     --resource-group "$RESOURCE_GROUP_NAME" \
     --factory-name "$DATAFACORY_NAME" \
