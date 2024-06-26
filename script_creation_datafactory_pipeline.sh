@@ -138,3 +138,42 @@ if [ $? -ne 0 ]; then
 else
   log_with_date "La pipeline "$PIPELINENAME" créé dans le datafactory '$DATAFACORY_NAME'."
 fi
+
+# Creation du json pour créer la trigger
+cat <<EOF > ./json/trigger.json
+{
+    "annotations": [],
+    "runtimeState": "Started",
+    "pipelines": [
+        {
+            "pipelineReference": {
+                "referenceName": "$PIPELINENAME",
+                "type": "PipelineReference"
+            }
+        }
+    ],
+    "type": "ScheduleTrigger",
+    "typeProperties": {
+        "recurrence": {
+            "frequency": "Minute",
+            "interval": 1,
+            "startTime": "2024-06-26T16:20:00",
+            "endTime": "2024-06-26T16:25:00",
+            "timeZone": "Romance Standard Time"
+        }
+    }
+}
+EOF
+
+# Creation de la trigger
+az datafactory trigger create \
+    --resource-group "$RESOURCE_GROUP_NAME" \
+    --factory-name "$DATAFACORY_NAME" \
+    --name "$TRIGGERNAME" \
+    --properties "@./json/trigger.json"
+if [ $? -ne 0 ]; then
+  log_with_date "Erreur lors de la creation du trigger."
+  exit 1
+else
+  log_with_date "La trigger "$TRIGGERNAME" créé dans le datafactory '$DATAFACORY_NAME'."
+fi
