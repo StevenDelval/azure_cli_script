@@ -23,6 +23,6 @@ if [ $? -ne 0 ]; then
   log_with_date "Erreur lors du la creation du datafactory."
   exit 1
 else
-  log_with_date "Datafactory "$DATAFACORY_NAME" pour le groupe de ressources '$RESOURCE_GROUP_NAME' créé dans la localisation '$LOCATION'."
+  log_with_date "Datafactory '$DATAFACORY_NAME' pour le groupe de ressources '$RESOURCE_GROUP_NAME' créé dans la localisation '$LOCATION'."
 fi
 
