@@ -20,7 +20,7 @@ az account set --subscription $SUBSCRIPTION_ID
 # Creation du Containeur Blob 
 az storage container create --name $NOM_BLOB_CONTAINER --account-name $STORAGE_NAME
 if [ $? -eq 0 ]; then
-    log_with_date "Container '$STORAGE_NAME' dans le compte de stockage '$STORAGE_NAME' cree."
+    log_with_date "Container '$NOM_BLOB_CONTAINER' dans le compte de stockage '$STORAGE_NAME' cree."
 else
     log_with_date "Problème lors de la creation du container '$NOM_BLOB_CONTAINER' dans le compte de stockage '$STORAGE_NAME'."
 fi
